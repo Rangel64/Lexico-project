@@ -1,9 +1,27 @@
-12345 
-alo
-if
-else
-for
-    aaaaaaaaaa
-    5000
-
-10 + 7
+Program CalcularSalario;
+Var TempoEmAnos, ValorSalario, c : Integer; 
+Begin 
+    If (TempoEmAnos > 10) Then
+    Begin
+        ValorSalario := 100; 
+    End
+    Else Begin
+        ValorSalario := ValorSalario * 2;
+    End;
+    Write(ValorSalario);
+    c := 1;
+    while (c <= 10) do
+    begin
+        write(c);
+        c := c + 1;
+    end;
+    c := 1;
+    repeat
+        write(c);
+        c := c + 1;
+    until (c > 10);
+    for c := 1 to 10 do
+    begin
+        write(c);
+    end;
+End.

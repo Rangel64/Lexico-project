@@ -19,6 +19,7 @@ public enum Classe{
     virgula, // ,
     ponto,
     doisPontos, // :
+    doisPontosIgual,//:=
     parentesesEsquerdo, // (
     parentesesDireito, // )
     string,
