@@ -1,5 +1,7 @@
+	{ Programa que calcula o salario de funcionarios }
+' sdasdAa A '
 Program CalcularSalario;
-Var TempoEmAnos, ValorSalario, c : Integer; 
+Var TempoEmAnos, ValorSalario, a, b, c : Integer; 
 Begin 
     If (TempoEmAnos > 10) Then
     Begin
@@ -23,5 +25,13 @@ Begin
     for c := 1 to 10 do
     begin
         write(c);
+    end;
+    if (a > 0 and b > 0) then
+    begin
+        writeln('Positivos');
+    end
+    else
+    begin
+        writeln('Um dos valores não é positivo');
     end;
 End.

@@ -13,6 +13,9 @@ public class Lexico {
     private BufferedReader br;
     private char caractere;
     private StringBuilder lexema = new StringBuilder();
+    private TabelaSimbolos tabelaSimbolos;
+
+
     private int linha;
     private int coluna;
 
@@ -28,14 +31,15 @@ public class Lexico {
         "write", "writeln", "read");
 
     public Lexico(String nomeArquivo) {
+        linha = 1;
+        coluna = 0;
         this.nomeArquivo = nomeArquivo;
         String caminhoArquivo = Paths.get(nomeArquivo).toAbsolutePath().toString();
+        tabelaSimbolos = new TabelaSimbolos();
         try {
             BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo, StandardCharsets.UTF_8));
             this.br = br;
             caractere = proximoChar();
-            linha = 1;
-            coluna = 0;
         } catch (IOException e) {
             System.err.println("Não foi possível abrir o arquivo: " + nomeArquivo);
             e.printStackTrace();
@@ -61,12 +65,8 @@ public class Lexico {
         do{
             if(caractere==' ' || caractere == '\t'){
                 while(caractere==' ' || caractere == '\t'){
-                    if(caractere == '\t'){
-                        coluna = coluna + 3;
-                    }
                     caractere = proximoChar();
-                }
-                
+                }  
             }
 
             else if(caractere=='\n'){
@@ -79,6 +79,7 @@ public class Lexico {
 
             else if(Character.isDigit(caractere)){
                 token = new Token(linha, coluna);
+
                 while(Character.isDigit(caractere)){
                     lexema.append(caractere);
                     caractere = proximoChar();
@@ -91,6 +92,7 @@ public class Lexico {
             
             else if(Character.isAlphabetic(caractere)){
                 token = new Token(linha, coluna);
+
                 while (Character.isAlphabetic(caractere)||Character.isDigit(caractere)) {
                     lexema.append(caractere);
                     caractere = proximoChar();   
@@ -101,6 +103,9 @@ public class Lexico {
 
                 if(palavrasReservadas.contains(lexema.toString().toLowerCase())){
                     token.setClasse(Classe.palavraReservada);
+                }
+                else{
+                    tabelaSimbolos.add(lexema.toString());
                 }
 
                 return token;
@@ -141,50 +146,16 @@ public class Lexico {
             }
 
             else if(caractere==':'){
+                caractere = proximoChar();
                 token = new Token(linha, coluna);
                 token.setClasse(Classe.doisPontos);
-                caractere = proximoChar();
-                if(caractere=='='){
-                    caractere = proximoChar();
-                    token.setClasse(Classe.doisPontosIgual);
-                    return token;
-                }else{
-                    caractere = proximoChar();
-                    return token;
-                }
-            }
 
-            else if(caractere=='>'){
-                token = new Token(linha, coluna);
-                token.setClasse(Classe.operadorMaior);
-                caractere = proximoChar();
                 if(caractere=='='){
                     caractere = proximoChar();
-                    token.setClasse(Classe.operadorMaiorIgual);
-                    return token;
-                }else{
-                    caractere = proximoChar();
-                    return token;
+                    token = new Token(linha, coluna);
+                    token.setClasse(Classe.atribuicao);
                 }
-            }
-
-            else if(caractere=='<'){
-                token = new Token(linha, coluna);
-                token.setClasse(Classe.operadorMenor);
-                caractere = proximoChar();
-                if(caractere=='='){
-                    caractere = proximoChar();
-                    token.setClasse(Classe.operadorMenorIgual);
-                    return token;
-                }
-                else if(caractere=='>'){
-                    caractere = proximoChar();
-                    token.setClasse(Classe.operadorDiferente);
-                    return token;
-                }else{
-                    caractere = proximoChar();
-                    return token;
-                }
+                return token;
             }
 
             else if(caractere==';'){
@@ -208,6 +179,44 @@ public class Lexico {
                 return token;
             }
 
+            else if(caractere=='>'){
+                caractere = proximoChar();
+                token = new Token(linha, coluna);
+                token.setClasse(Classe.operadorMaior);
+
+                if(caractere=='='){
+                    caractere = proximoChar();
+                    token = new Token(linha, coluna);
+                    token.setClasse(Classe.operadorMaiorIgual);
+                }
+                return token;
+            }
+
+            else if(caractere=='<'){
+                caractere = proximoChar();
+                token = new Token(linha, coluna);
+                token.setClasse(Classe.operadorMenor);
+
+                if(caractere=='='){
+                    caractere = proximoChar();
+                    token = new Token(linha, coluna);
+                    token.setClasse(Classe.operadorMenorIgual);
+                }
+                else if(caractere=='>'){
+                    caractere = proximoChar();
+                    token = new Token(linha, coluna);
+                    token.setClasse(Classe.operadorDiferente);
+                }
+                return token;
+            }
+
+            else if(caractere=='='){
+                caractere = proximoChar();
+                token = new Token(linha, coluna);
+                token.setClasse(Classe.operadorIgual);
+                return token;
+            }
+
             else if(caractere=='('){
                 caractere = proximoChar();
                 token = new Token(linha, coluna);
@@ -222,13 +231,63 @@ public class Lexico {
                 return token;
             }
 
+            else if(caractere=='{'){
+                caractere = proximoChar();
 
+                while(caractere!='}'){        
+                    if(caractere=='\n'){
+                        linha++;
+                        coluna = 0;
+                        caractere = proximoChar();
+                    } else {
+                        caractere = proximoChar();
+                    }
+                }
+                
+                if (caractere == '}') {
+                    caractere = proximoChar();
+
+                } else {
+                    token.setClasse(Classe.EOF);
+                    return token;
+                }
+            }
+
+            else if(caractere=='\''){
+                token = new Token(linha, coluna);
+                caractere = proximoChar();
+
+                while(caractere!='\''){        
+                    if(caractere=='\n'){
+                        token.setClasse(Classe.EOF);
+                        return token;
+                    } else {
+                        lexema.append(caractere);
+                        caractere = proximoChar();
+                    }
+                }
+                
+                caractere = proximoChar();
+                token.setClasse(Classe.string);
+                token.setValor(new Valor(lexema.toString()));
+                return token;
+            }
+            
+            else {
+                System.out.println("Erro no sistema");
+            }
+            
         }while(caractere!=65535);
 
         token = new Token(linha, coluna);
         token.setClasse(Classe.EOF);
 
         return token;  
-        
     }
+
+    public TabelaSimbolos getTabelaSimbolos(){
+        return tabelaSimbolos;
+    }
+
 }
+

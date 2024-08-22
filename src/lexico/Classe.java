@@ -23,5 +23,6 @@ public enum Classe{
     parentesesEsquerdo, // (
     parentesesDireito, // )
     string,
+    comentario,
     EOF
  }
