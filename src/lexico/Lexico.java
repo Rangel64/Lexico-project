@@ -118,115 +118,130 @@ public class Lexico {
             }
 
             else if(caractere=='+'){
-                caractere = proximoChar();
                 token = new Token(linha, coluna);
+                caractere = proximoChar();
+                
                 token.setClasse(Classe.operadorSoma);
                 return token;
             }
 
             else if(caractere=='-'){
-                caractere = proximoChar();
                 token = new Token(linha, coluna);
+                caractere = proximoChar();
+                
                 token.setClasse(Classe.operadorSubtracao);
                 return token;
             }
 
             else if(caractere=='*'){
-                caractere = proximoChar();
                 token = new Token(linha, coluna);
+                caractere = proximoChar();
+                
                 token.setClasse(Classe.operadorMultiplicacao);
                 return token;
             }
 
             else if(caractere=='/'){
-                caractere = proximoChar();
                 token = new Token(linha, coluna);
+                caractere = proximoChar();
+                
                 token.setClasse(Classe.operadorDivisao);
                 return token;
             }
 
             else if(caractere==':'){
-                caractere = proximoChar();
                 token = new Token(linha, coluna);
+                caractere = proximoChar();
+                
                 token.setClasse(Classe.doisPontos);
 
                 if(caractere=='='){
-                    caractere = proximoChar();
                     token = new Token(linha, coluna);
+                    caractere = proximoChar();
+                    
                     token.setClasse(Classe.atribuicao);
                 }
                 return token;
             }
 
             else if(caractere==';'){
-                caractere = proximoChar();
                 token = new Token(linha, coluna);
+                caractere = proximoChar();
                 token.setClasse(Classe.pontoEVirgula);
                 return token;
             }
 
             else if(caractere==','){
-                caractere = proximoChar();
                 token = new Token(linha, coluna);
+                caractere = proximoChar();
+                
                 token.setClasse(Classe.virgula);
                 return token;
             }
 
             else if(caractere=='.'){
-                caractere = proximoChar();
                 token = new Token(linha, coluna);
+                caractere = proximoChar();
                 token.setClasse(Classe.ponto);
                 return token;
             }
 
             else if(caractere=='>'){
-                caractere = proximoChar();
                 token = new Token(linha, coluna);
+                caractere = proximoChar();
+                
                 token.setClasse(Classe.operadorMaior);
 
                 if(caractere=='='){
-                    caractere = proximoChar();
                     token = new Token(linha, coluna);
+                    caractere = proximoChar();
+                    
                     token.setClasse(Classe.operadorMaiorIgual);
                 }
                 return token;
             }
 
             else if(caractere=='<'){
-                caractere = proximoChar();
                 token = new Token(linha, coluna);
+                caractere = proximoChar();
+                
                 token.setClasse(Classe.operadorMenor);
 
                 if(caractere=='='){
-                    caractere = proximoChar();
                     token = new Token(linha, coluna);
+                    caractere = proximoChar();
+                    
                     token.setClasse(Classe.operadorMenorIgual);
                 }
                 else if(caractere=='>'){
-                    caractere = proximoChar();
                     token = new Token(linha, coluna);
+                    caractere = proximoChar();
+                    
                     token.setClasse(Classe.operadorDiferente);
                 }
                 return token;
             }
 
             else if(caractere=='='){
-                caractere = proximoChar();
                 token = new Token(linha, coluna);
+                caractere = proximoChar();
+                
                 token.setClasse(Classe.operadorIgual);
                 return token;
             }
 
             else if(caractere=='('){
-                caractere = proximoChar();
                 token = new Token(linha, coluna);
+                caractere = proximoChar();
+                
                 token.setClasse(Classe.parentesesEsquerdo);
                 return token;
             }
 
             else if(caractere==')'){
-                caractere = proximoChar();
                 token = new Token(linha, coluna);
+                caractere = proximoChar();
+                
                 token.setClasse(Classe.parentesesDireito);
                 return token;
             }
