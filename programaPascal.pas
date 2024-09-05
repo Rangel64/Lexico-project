@@ -3,9 +3,9 @@
 
 Program CalcularSalario;
 
-.
 
-{Var TempoEmAnos, ValorSalario, a, b, c : Integer; 
+
+Var TempoEmAnos, ValorSalario, a, b, c : Integer; 
 Begin 
     If (TempoEmAnos > 10) Then
     Begin
@@ -38,4 +38,4 @@ Begin
     begin
         writeln('Um dos valores não é positivo');
     end;
-End.}
+End.
