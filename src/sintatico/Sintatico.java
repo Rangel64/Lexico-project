@@ -13,7 +13,7 @@ public class Sintatico{
 
 
 
-    public Sintatico(String arquivo){corpo
+    public Sintatico(String arquivo){
         this.aquivoLeitura = arquivo;
         lexico = new Lexico(arquivo);
     }
@@ -31,7 +31,7 @@ public class Sintatico{
     public void programa(){
         if (token.getClasse() == Classe.palavraReservada && token.getValor().getTexto().equalsIgnoreCase("program")) {
             token = lexico.nextToken();
-            if (token.getClasse() == Classe.indentificador) {
+            if (token.getClasse() == Classe.identificador) {
                 token = lexico.nextToken();
                 // {A01}
                 if (token.getClasse() == Classe.pontoEVirgula) {
@@ -626,7 +626,52 @@ public class Sintatico{
         }
     }
 
+    // <chamada_procedimento> ::= <id_proc> {A50} <argumentos> {A23}
+    public void chamada_procedimento(){
+        if (token.getClasse() == Classe.identificador) {
+            token = lexico.nextToken();
+            // {A50}
+            argumentos();
+            // {A23}
+        } else {
+            System.err.println(token.getLinha() + "," + token.getColuna()
+                        + " Erro: era esperado um identificador");
+        }
+        
+       
+        
+    }
 
+    // <argumentos> ::= ( <lista_arg> ) | ε
+    public void argumentos(){
+        if (token.getClasse() == Classe.parentesesEsquerdo) {
+            token = lexico.nextToken();
+            lista_arg();
+            if (token.getClasse() == Classe.parentesesDireito) {
+                token = lexico.nextToken();
+                
+            } else {
+                System.err.println(token.getLinha() + "," + token.getColuna()
+                        + " Erro: era esperado um parênteses direito após a lista de variáveis");
+            }
+        }
+    }
+
+    // <lista_arg> ::= <expressao> <cont_lista_arg>
+    void lista_arg() {
+        expressao();
+        cont_lista_arg();
+    }
+
+    void cont_lista_arg() {
+        if (token.getClasse() == Classe.virgula) {
+            token = lexico.nextToken();
+
+            lista_arg();
+        } else {
+            System.err.println(token.getLinha() + "," + token.getColuna() + " - " + "Erro sintático: faltou ponto e vírgula (,)");
+        }
+    }
 
     //<mais_sentencas> ::= ; <cont_sentencas>
     public void mais_sentencas() {
@@ -732,11 +777,196 @@ public class Sintatico{
         }
     }
 
-    private void chamada_procedimento() {
-        id_proc();
-        //{A50}
-        argumentos();
-        //{A23}
+    // <expressao_logica> ::= <termo_logico> <mais_expr_logica>
+    private void expressao_logica() {
+        termo_logico();
+        mais_expr_logica();
+    }
+
+    // <mais_expr_logica> ::= or <termo_logico> <mais_expr_logica> {A26} | ε
+    private void mais_expr_logica() {
+        if (token.getClasse() == Classe.palavraReservada
+                && token.getValor().getTexto().equals("or")) {
+            token = lexico.nextToken();
+            termo_logico();
+            mais_expr_logica();
+            // {A26}
+
+        }
+    }
+
+    // <termo_logico> ::= <fator_logico> <mais_termo_logico>
+    private void termo_logico() {
+        fator_logico();
+        mais_termo_logico();
+    }
+
+    // <mais_termo_logico> ::= and <fator_logico> <mais_termo_logico> {A27} | ε
+    private void mais_termo_logico() {
+        if (token.getClasse() == Classe.palavraReservada
+                && token.getValor().getTexto().equals("and")) {
+            token = lexico.nextToken();
+            fator_logico();
+            mais_termo_logico();
+            // {A27}
+            
+        }
+    }
+
+    // <fator_logico> ::= <relacional> |
+    // ( <expressao_logica> ) |
+    // not <fator_logico> {A28} |
+    // true {A29} |
+    // false {A30}
+    private void fator_logico() {
+        if (token.getClasse() == Classe.parentesesEsquerdo) {
+            token = lexico.nextToken();
+            expressao_logica();
+            if (token.getClasse() == Classe.parentesesDireito) {
+                token = lexico.nextToken();
+            } else {
+                System.err.println(token.getLinha() + ", " + token.getColuna() +
+                        " - ()) parênteses direito esperado (fator_logico).");
+            }
+        } else if (token.getValor().getTexto().equals("not")) {
+            token = lexico.nextToken();
+            fator_logico();
+            // {A28}
+            
+        } else if (token.getValor().getTexto().equals("true")) {
+            token = lexico.nextToken();
+            // {A29}
+            
+        } else if (token.getValor().getTexto().equals("false")) {
+            token = lexico.nextToken();
+            // {A30}
+            
+        } else {
+            relacional();
+        }
+    }
+
+    // <relacional> ::= <expressao> = <expressao> {A31} |
+    // <expressao> > <expressao> {A32} |
+    // <expressao> >= <expressao> {A33} |
+    // <expressao> < <expressao> {A34} |
+    // <expressao> <= <expressao> {A35} |
+    // <expressao> <> <expressao> {A36}
+    private void relacional() {
+        expressao();
+        if (token.getClasse() == Classe.operadorIgual) {
+            token = lexico.nextToken();
+            expressao();
+            // {A31}
+            
+        } else if (token.getClasse() == Classe.operadorMaior) {
+            token = lexico.nextToken();
+            expressao();
+            // {A32}
+            
+        } else if (token.getClasse() == Classe.operadorMaiorIgual) {
+            token = lexico.nextToken();
+            expressao();
+            // {A33}
+            
+        } else if (token.getClasse() == Classe.operadorMenor) {
+            token = lexico.nextToken();
+            expressao();
+            // {A34}
+            
+        } else if (token.getClasse() == Classe.operadorMenorIgual) {
+            token = lexico.nextToken();
+            expressao();
+            // {A35}
+            
+        } else if (token.getClasse() == Classe.operadorDiferente) {
+            token = lexico.nextToken();
+            expressao();
+        
+        } else {
+            System.err.println(token.getLinha() + ", " + token.getColuna() +
+                    " - Operador relacional (=, <, <=, >, >= <>) esperado (relacional).");
+        }
+    }
+
+    // <expressao> ::= <termo> <mais_expressao>
+    private void expressao() {
+        termo();
+        mais_expressao();
+    }
+
+    // <mais_expressao> ::= + <termo> <mais_expressao> {A37} |
+    // - <termo> <mais_expressao> {A38} | ε
+    private void mais_expressao() {
+        if (token.getClasse() == Classe.operadorSoma) {
+            token = lexico.nextToken();
+            termo();
+            // {A37}
+        } else if (token.getClasse() == Classe.operadorSubtracao) {
+            token = lexico.nextToken();
+            termo();
+            // {A38}
+            mais_expressao();
+        }
+    }
+
+    // <termo> ::= <fator> <mais_termo>
+    private void termo() {
+        fator();
+        mais_termo();
+    }
+
+    // <mais_termo> ::= * <fator> <mais_termo> {A39} | / <fator> <mais_termo> {A40}
+    // | ε
+    private void mais_termo() {
+        if (token.getClasse() == Classe.operadorMultiplicacao) {
+            token = lexico.nextToken();
+            fator();
+            // {A39}
+            mais_termo();
+        } else if (token.getClasse() == Classe.operadorDivisao) {
+            token = lexico.nextToken();
+            fator();
+            // {A40}
+            mais_termo();
+        }
+    }
+
+    // <fator> ::= <id> {A55} | <intnum> {A41} | ( <expressao> )
+    private void fator() {
+        if (token.getClasse() == Classe.identificador) {
+            // {A55}
+            
+            token = lexico.nextToken();
+
+        } else {
+            if (token.getClasse() == Classe.numeroInteiro) {
+                // {A41}
+                
+                token = lexico.nextToken();
+            } else {
+                if (token.getClasse() == Classe.parentesesEsquerdo) {
+                    token = lexico.nextToken();
+                    expressao();
+                    if (token.getClasse() == Classe.parentesesDireito) {
+                        token = lexico.nextToken();
+
+                        if(token.getClasse() == Classe.identificador) {
+                            // {A60}
+                            argumentos();
+                            // {A42}
+                        }
+
+                    } else {
+                        System.err.println(token.getLinha() + "," + token.getColuna()
+                                + " Erro: era esperado um parênteses direito");
+                    }
+                } else {
+                    System.err.println(token.getLinha() + "," + token.getColuna()
+                            + " Erro: era esperado um identificador, número inteiro ou parênteses esquerdo");
+                }
+            }
+        }
     }
 
 }
