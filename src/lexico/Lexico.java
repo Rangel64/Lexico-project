@@ -15,7 +15,6 @@ public class Lexico {
     private StringBuilder lexema = new StringBuilder();
     private TabelaSimbolos tabelaSimbolos;
 
-
     private int linha;
     private int coluna;
 
@@ -37,8 +36,7 @@ public class Lexico {
         String caminhoArquivo = Paths.get(nomeArquivo).toAbsolutePath().toString();
         tabelaSimbolos = new TabelaSimbolos();
         try {
-            BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo, StandardCharsets.UTF_8));
-            this.br = br;
+            br = new BufferedReader(new FileReader(caminhoArquivo, StandardCharsets.UTF_8));
             caractere = proximoChar();
         } catch (IOException e) {
             System.err.println("Não foi possível abrir o arquivo: " + nomeArquivo);
@@ -59,250 +57,195 @@ public class Lexico {
         return 0;
     }
 
-    public Token nextToken(){
+    public Token nextToken() {
         lexema.setLength(0);
-
-        do{
-            if(caractere==' ' || caractere == '\t'){
-                while(caractere==' ' || caractere == '\t'){
-                    caractere = proximoChar();
-                }  
-            }
-
-            else if(caractere=='\n'){
-                while(caractere=='\n'){
-                    linha++;
-                    coluna = 0;
+        while (true) {
+            // Tratamento de espaços em branco e tabulações
+            if (caractere == ' ' || caractere == '\t') {
+                while (caractere == ' ' || caractere == '\t') {
                     caractere = proximoChar();
                 }
             }
 
-            else if(Character.isDigit(caractere)){
-                token = new Token(linha, coluna);
-
-                while(Character.isDigit(caractere)){
-                    lexema.append(caractere);
-                    caractere = proximoChar();
-                }
-
-                token.setClasse(Classe.numeroInteiro);
-                token.setValor(new Valor(Integer.parseInt(lexema.toString())));
-                return token;
-            }
-            
-            else if(Character.isAlphabetic(caractere)){
-                token = new Token(linha, coluna);
-
-                while (Character.isAlphabetic(caractere)||Character.isDigit(caractere)) {
-                    lexema.append(caractere);
-                    caractere = proximoChar();   
-                }
-
-                token.setClasse(Classe.identificador);
-                token.setValor(new Valor(lexema.toString()));
-
-                if(palavrasReservadas.contains(lexema.toString().toLowerCase())){
-                    token.setClasse(Classe.palavraReservada);
-                }
-                else{
-                    tabelaSimbolos.add(lexema.toString());
-                }
-
-                return token;
-            }
-            
-            else if(caractere==65535){
-                token = new Token(linha, coluna);
-                token.setClasse(Classe.EOF);
-                return token;
-            }
-
-            else if(caractere=='+'){
-                token = new Token(linha, coluna);
-                caractere = proximoChar();
-                
-                token.setClasse(Classe.operadorSoma);
-                return token;
-            }
-
-            else if(caractere=='-'){
-                token = new Token(linha, coluna);
-                caractere = proximoChar();
-                
-                token.setClasse(Classe.operadorSubtracao);
-                return token;
-            }
-
-            else if(caractere=='*'){
-                token = new Token(linha, coluna);
-                caractere = proximoChar();
-                
-                token.setClasse(Classe.operadorMultiplicacao);
-                return token;
-            }
-
-            else if(caractere=='/'){
-                token = new Token(linha, coluna);
-                caractere = proximoChar();
-                
-                token.setClasse(Classe.operadorDivisao);
-                return token;
-            }
-
-            else if(caractere==':'){
-                token = new Token(linha, coluna);
-                caractere = proximoChar();
-                
-                token.setClasse(Classe.doisPontos);
-
-                if(caractere=='='){
-                    token = new Token(linha, coluna);
-                    caractere = proximoChar();
-                    
-                    token.setClasse(Classe.atribuicao);
-                }
-                return token;
-            }
-
-            else if(caractere==';'){
-                token = new Token(linha, coluna);
-                caractere = proximoChar();
-                token.setClasse(Classe.pontoEVirgula);
-                return token;
-            }
-
-            else if(caractere==','){
-                token = new Token(linha, coluna);
-                caractere = proximoChar();
-                
-                token.setClasse(Classe.virgula);
-                return token;
-            }
-
-            else if(caractere=='.'){
-                token = new Token(linha, coluna);
-                caractere = proximoChar();
-                token.setClasse(Classe.ponto);
-                return token;
-            }
-
-            else if(caractere=='>'){
-                token = new Token(linha, coluna);
-                caractere = proximoChar();
-                
-                token.setClasse(Classe.operadorMaior);
-
-                if(caractere=='='){
-                    token = new Token(linha, coluna);
-                    caractere = proximoChar();
-                    
-                    token.setClasse(Classe.operadorMaiorIgual);
-                }
-                return token;
-            }
-
-            else if(caractere=='<'){
-                token = new Token(linha, coluna);
-                caractere = proximoChar();
-                
-                token.setClasse(Classe.operadorMenor);
-
-                if(caractere=='='){
-                    token = new Token(linha, coluna);
-                    caractere = proximoChar();
-                    
-                    token.setClasse(Classe.operadorMenorIgual);
-                }
-                else if(caractere=='>'){
-                    token = new Token(linha, coluna);
-                    caractere = proximoChar();
-                    
-                    token.setClasse(Classe.operadorDiferente);
-                }
-                return token;
-            }
-
-            else if(caractere=='='){
-                token = new Token(linha, coluna);
-                caractere = proximoChar();
-                
-                token.setClasse(Classe.operadorIgual);
-                return token;
-            }
-
-            else if(caractere=='('){
-                token = new Token(linha, coluna);
-                caractere = proximoChar();
-                
-                token.setClasse(Classe.parentesesEsquerdo);
-                return token;
-            }
-
-            else if(caractere==')'){
-                token = new Token(linha, coluna);
-                caractere = proximoChar();
-                
-                token.setClasse(Classe.parentesesDireito);
-                return token;
-            }
-
-            else if(caractere=='{'){
-                caractere = proximoChar();
-
-                while(caractere!='}'){        
-                    if(caractere=='\n'){
+            // Tratamento de quebra de linha
+            else if(caractere == '\n' || caractere == '\r') {
+                while(caractere == '\n' || caractere == '\r') {
+                    if (caractere == '\n') {
                         linha++;
                         coluna = 0;
-                        caractere = proximoChar();
-                    } else {
-                        caractere = proximoChar();
                     }
-                }
-                
-                if (caractere == '}') {
                     caractere = proximoChar();
-
-                } else {
-                    token.setClasse(Classe.EOF);
-                    return token;
                 }
             }
-
-            else if(caractere=='\''){
+            
+            // Tratamento de números inteiros
+            else if (Character.isDigit(caractere)) {
                 token = new Token(linha, coluna);
-                caractere = proximoChar();
-
-                while(caractere!='\''){        
-                    if(caractere=='\n'){
-                        token.setClasse(Classe.EOF);
-                        return token;
-                    } else {
-                        lexema.append(caractere);
-                        caractere = proximoChar();
-                    }
+                while (Character.isDigit(caractere)) {
+                    lexema.append(caractere);
+                    caractere = proximoChar();
                 }
-                
-                caractere = proximoChar();
-                token.setClasse(Classe.string);
-                token.setValor(new Valor(lexema.toString()));
+                token.setClasse(Classe.numeroInteiro);
+                token.setValor(new Valor(Integer.parseInt(lexema.toString())));
+                // System.out.println(token.toString());
                 return token;
             }
-            
-            else {
-                System.out.println("Erro no sistema");
+
+            // Tratamento de identificadores e palavras reservadas
+            else if (Character.isAlphabetic(caractere)) {
+                token = new Token(linha, coluna);
+                while (Character.isAlphabetic(caractere) || Character.isDigit(caractere)) {
+                    lexema.append(caractere);
+                    caractere = proximoChar();
+                }
+                String lexemaStr = lexema.toString();
+                token.setValor(new Valor(lexemaStr));
+
+                if (palavrasReservadas.contains(lexemaStr.toLowerCase())) {
+
+                    token.setClasse(Classe.palavraReservada);
+                } else {
+                    token.setClasse(Classe.identificador);
+                    tabelaSimbolos.add(lexemaStr);
+                }
+                // System.out.println(token.toString());
+                return token;
             }
-            
-        }while(caractere!=65535);
 
-        token = new Token(linha, coluna);
-        token.setClasse(Classe.EOF);
+            // Fim de arquivo
+            else if (caractere == 65535) {
+                token = new Token(linha, coluna);
+                token.setClasse(Classe.EOF);
+                // System.out.println(token.toString());
+                return token;
+            }
 
-        return token;  
+            else {
+                // Tratamento de operadores e símbolos especiais
+                token = new Token(linha, coluna);
+                switch (caractere) {
+                    case '+':
+                        caractere = proximoChar();
+                        token.setClasse(Classe.operadorSoma);
+                        // System.out.println(token.toString());
+                        return token;
+                    case '-':
+                        caractere = proximoChar();
+                        token.setClasse(Classe.operadorSubtracao);
+                        // System.out.println(token.toString());
+                        return token;
+                    case '*':
+                        caractere = proximoChar();
+                        token.setClasse(Classe.operadorMultiplicacao);
+                        // System.out.println(token.toString());
+                        return token;
+                    case '/':
+                        caractere = proximoChar();
+                        token.setClasse(Classe.operadorDivisao);
+                        // System.out.println(token.toString());
+                        return token;
+                    case ':':
+                        caractere = proximoChar();
+                        if (caractere == '=') {
+                            caractere = proximoChar();
+                            token.setClasse(Classe.atribuicao);
+                        } else {
+                            token.setClasse(Classe.doisPontos);
+                        }
+                        // System.out.println(token.toString());
+                        return token;
+                    case ';':
+                        caractere = proximoChar();
+                        token.setClasse(Classe.pontoEVirgula);
+                        // System.out.println(token.toString());
+                        return token;
+                    case ',':
+                        caractere = proximoChar();
+                        token.setClasse(Classe.virgula);
+                        // System.out.println(token.toString());
+                        return token;
+                    case '.':
+                        caractere = proximoChar();
+                        token.setClasse(Classe.ponto);
+                        // System.out.println(token.toString());
+                        return token;
+                    case '>':
+                        caractere = proximoChar();
+                        if (caractere == '=') {
+                            caractere = proximoChar();
+                            token.setClasse(Classe.operadorMaiorIgual);
+                        } else {
+                            token.setClasse(Classe.operadorMaior);
+                        }
+                        // System.out.println(token.toString());
+                        return token;
+                    case '<':
+                        caractere = proximoChar();
+                        if (caractere == '=') {
+                            caractere = proximoChar();
+                            token.setClasse(Classe.operadorMenorIgual);
+                        } else if (caractere == '>') {
+                            caractere = proximoChar();
+                            token.setClasse(Classe.operadorDiferente);
+                        } else {
+                            token.setClasse(Classe.operadorMenor);
+                        }
+                        // System.out.println(token.toString());
+                        return token;
+                    case '=':
+                        caractere = proximoChar();
+                        token.setClasse(Classe.operadorIgual);
+                        // System.out.println(token.toString());
+                        return token;
+                    case '(':
+                        caractere = proximoChar();
+                        token.setClasse(Classe.parentesesEsquerdo);
+                        // System.out.println(token.toString());
+                        return token;
+                    case ')':
+                        caractere = proximoChar();
+                        token.setClasse(Classe.parentesesDireito);
+                        // System.out.println(token.toString());
+                        return token;
+                    case '{':
+                        caractere = proximoChar();
+                        while (caractere != '}') {
+                            if (caractere == '\n') {
+                                linha++;
+                                coluna = 0;
+                            }
+                            caractere = proximoChar();
+                        }
+                        caractere = proximoChar();
+                        continue;
+                    case '\'':
+                        caractere = proximoChar();
+                        while (caractere != '\'') {
+                            if (caractere == '\n') {
+                                token.setClasse(Classe.EOF);
+                                // System.out.println(token.toString());
+                                return token;
+                            }
+                            lexema.append(caractere);
+                            caractere = proximoChar();
+                        }
+                        caractere = proximoChar();
+                        token.setClasse(Classe.string);
+                        token.setValor(new Valor(lexema.toString()));
+                        // System.out.println(token.toString());
+                        return token;
+                    default:
+                        System.out.println(caractere+", " + (int)caractere);
+                        System.out.println("Erro no sistema");
+                        caractere = proximoChar();
+                        
+                }
+            }
+        }
     }
 
-    public TabelaSimbolos getTabelaSimbolos(){
+    public TabelaSimbolos getTabelaSimbolos() {
         return tabelaSimbolos;
     }
-
 }
 

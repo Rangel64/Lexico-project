@@ -1,12 +1,15 @@
 import sintatico.Sintatico;
 
 public class App {
+    
+    
     public static void main(String[] args) throws Exception {
         
         Sintatico sintatico = new Sintatico("programaPascal.pas");
 
         sintatico.analisar();
-
+        
+        // System.out.println("======================================================================================================");
         // Lexico lexico = new Lexico("programaPascal.pas");
         // Token token;
         // do{
